@@ -1,0 +1,28 @@
+# Maven build outputs
+target/
+*.class
+*.jar
+*.war
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+logs/
+
+# Environment and private configuration
+.env
+.env.*
+!.env.example
+src/main/resources/application-local.yml
+src/main/resources/application-local.properties
+
+# Operating system
+.DS_Store
+Thumbs.db
