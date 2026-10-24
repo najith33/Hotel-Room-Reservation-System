@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Availability Search Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard"><i class="fas fa-hotel me-2"></i>Hotel Room Reservation</a>
+        <div class="ms-auto">
+            <a class="btn btn-outline-light btn-sm" href="/availability/manage">Back to Availability</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-4">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4 class="mb-3"><i class="fas fa-search me-2"></i>Search Availability</h4>
+            <form method="get" action="/availability/search" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Room</label>
+                    <select class="form-select" name="roomId">
+                        <option value="">All rooms</option>
+                        <option th:each="room : ${rooms}"
+                                th:value="${room.roomId}"
+                                th:text="${room.roomName}"
+                                th:selected="${searchCriteria.roomId != '' and searchCriteria.roomId == room.roomId}"></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Start date</label>
+                    <input class="form-control" type="date" name="startDate" th:value="${searchCriteria.startDate}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">End date</label>
+                    <input class="form-control" type="date" name="endDate" th:value="${searchCriteria.endDate}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status">
+                        <option value="">All statuses</option>
+                        <option value="AVAILABLE" th:selected="${searchCriteria.status == 'AVAILABLE'}">Available</option>
+                        <option value="BOOKED" th:selected="${searchCriteria.status == 'BOOKED'}">Booked</option>
+                        <option value="MAINTENANCE" th:selected="${searchCriteria.status == 'MAINTENANCE'}">Maintenance</option>
+                        <option value="BLOCKED" th:selected="${searchCriteria.status == 'BLOCKED'}">Blocked</option>
+                    </select>
+                </div>
+                <div class="col-12 text-end">
+                    <a href="/availability/search" class="btn btn-outline-secondary">Clear</a>
+                    <button class="btn btn-primary" type="submit"><i class="fas fa-search me-1"></i>Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Results</h5>
+            <span class="badge bg-primary" th:text="${(results != null ? #lists.size(results) : 0) + ' found'}">0 found</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Room</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${results == null or #lists.isEmpty(results)}">
+                    <td colspan="5" class="text-center text-muted py-4">No availability records matched your search.</td>
+                </tr>
+                <tr th:each="slot : ${results}">
+                    <td th:text="${slot.room != null ? slot.room.roomName : '-'}">Room</td>
+                    <td th:text="${slot.date}">2026-01-01</td>
+                    <td><span th:text="${slot.startTime}">09:00</span> - <span th:text="${slot.endTime}">12:00</span></td>
+                    <td><span class="badge bg-secondary" th:text="${slot.status}">AVAILABLE</span></td>
+                    <td th:text="${slot.notes != null ? slot.notes : '-'}">-</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

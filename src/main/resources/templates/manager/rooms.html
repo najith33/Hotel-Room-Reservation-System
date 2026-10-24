@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::content})}">
+<head>
+    <title>Room Management - Hotel Room Reservation System</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-building me-2"></i>Room Management</h2>
+            <div>
+                <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addRoomModal">
+                    <i class="fas fa-plus me-1"></i>Add Room
+                </button>
+                <a href="/manager/dashboard" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div th:if="${rooms.empty}" class="text-center py-4">
+                    <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No rooms found</h5>
+                    <p class="text-muted">Add your first room to get started.</p>
+                </div>
+
+                <div th:if="${!rooms.empty}" class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Room Name</th>
+                                <th>Type</th>
+                                <th>Capacity</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="room : ${rooms}">
+                                <td th:text="${room.roomName}">Room 201</td>
+                                <td>
+                                    <span class="badge bg-info" th:text="${room.roomType}">STANDARD</span>
+                                </td>
+                                <td th:text="${room.capacity}">200</td>
+                                <td th:text="${room.description ?: 'No description'}">Elegant ballroom for special reservations</td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${room.isActive} ? 'bg-success' : 'bg-danger'"
+                                          th:text="${room.isActive} ? 'Active' : 'Inactive'">Active</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                data-bs-toggle="modal" 
+                                                th:data-bs-target="'#editRoomModal' + ${room.roomId}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form th:if="${room.isActive}" 
+                                              th:action="@{/manager/rooms/{id}/deactivate(id=${room.roomId})}" 
+                                              method="post" style="display:inline">
+                                            <button class="btn btn-sm btn-outline-warning" 
+                                                    onclick="return confirm('Deactivate this room?')">
+                                                <i class="fas fa-pause"></i>
+                                            </button>
+                                        </form>
+                                        <form th:if="${!room.isActive}" 
+                                              th:action="@{/manager/rooms/{id}/activate(id=${room.roomId})}" 
+                                              method="post" style="display:inline">
+                                            <button class="btn btn-sm btn-outline-success" 
+                                                    onclick="return confirm('Activate this room?')">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Room Modal -->
+        <div id="addRoomModal" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Room</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="/manager/rooms/add" method="post">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Room Name</label>
+                                <input type="text" name="roomName" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Room Type</label>
+                                <select name="roomType" class="form-select" required>
+                                    <option value="">Choose type...</option>
+                                    <option value="STANDARD">Standard</option>
+                                    <option value="DELUXE">Deluxe</option>
+                                    <option value="SUITE">Suite</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Capacity</label>
+                                <input type="number" name="capacity" class="form-control" min="1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Hourly Rate</label>
+                                <input type="number" name="hourlyRate" class="form-control" min="0.01" step="0.01" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea name="description" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Add Room</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
